@@ -3,11 +3,11 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Штрафнік</title>
+<title>Трыбунал</title>
 <meta name="theme-color" content="#111111">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Штрафнік">
+<meta name="apple-mobile-web-app-title" content="Трыбунал">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23111'/%3E%3Crect x='14' y='14' width='36' height='36' rx='8' fill='%23fff'/%3E%3Ccircle cx='24' cy='24' r='4' fill='%235f1e3a'/%3E%3Ccircle cx='32' cy='32' r='4' fill='%235f1e3a'/%3E%3Ccircle cx='40' cy='40' r='4' fill='%231e3a5f'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;700;800&display=swap">
@@ -97,7 +97,7 @@ main{flex:1;display:flex;flex-direction:column;min-height:0}
 </head>
 <body>
 <header>
-  <h1 id="title">Штрафнік</h1>
+  <h1 id="title">Трыбунал</h1>
   <button class="hb" id="langBtn" type="button">УКР</button>
   <button class="hb" id="editBtn" type="button">✏️</button>
   <button class="hb" id="shareBtn" type="button"><svg viewBox="0 0 24 24"><path d="M4 12v7a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-7"/><path d="M16 6l-4-4-4 4"/><path d="M12 2v13"/></svg></button>
@@ -129,20 +129,20 @@ const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',
 
 /* ---------- мова ---------- */
 const I18N={
- be:{title:'Штрафнік',me:'Уладзь',her:'Світланка',debts:'доўгаў',threwM:'укінуў',threwF:'укінула',workedM:'адпрацаваў',workedF:'адпрацавала',
+ be:{title:'Трыбунал',me:'Уладзь',her:'Світланка',debts:'доўгаў',threwM:'укінуў',threwF:'укінула',workedM:'адпрацаваў',workedF:'адпрацавала',
    dice:'Кубік',rolling:'Кідаем...',tapHint:'тапні па доўгу, калі выканаў',done:'Выканана ✅',undo:'Адмяніць',
    pens:'Пакаранні',ready:'Гатова',ph:'Напрыклад, 20 прысяданняў',toBank:'у капілку',addPen:'＋ Дадаць пакаранне',copyTo:'Скапіяваць гэты спіс',copyMe:'Уладзю',copyHer:'Світланцы',copied:'Скапіявана ✓',
    edNote:'Эмодзі мяняецца тапам. Калі пакаранне грашовае, пастаў суму, тады яна пойдзе ў лічыльнік крон. Кубік кожнага кідае толькі яго пакаранні, і ўсе выпадаюць з аднолькавым шанцам. Старыя доўгі застаюцца такімі, як былі.',
    save:'Захаваць',cancel:'Адмена',linkCopied:'Лінк скапіяваны, адпраўляй',syncOff:'Сінхранізацыя яшчэ не наладжана',
    syncTitle:'Сінхранізацыя',token:'GitHub токен (з доступам да gist)',gist:'ID гіста (пуста = створыцца новы)',synced:'Усё сінхранізавана',syncErr:'Не атрымалася сінхранізаваць',
-   share:'Падзяліцца',sync:'Сінхранізацыя',edit:'Пакаранні',joined:'Падключыліся да агульнага штрафніка',lang:'УКР'},
- uk:{title:'Штрафник',me:'Уладзь',her:'Світланка',debts:'боргів',threwM:'вкинув',threwF:'вкинула',workedM:'відпрацював',workedF:'відпрацювала',
+   share:'Падзяліцца',sync:'Сінхранізацыя',edit:'Пакаранні',joined:'Падключыліся да агульнага трыбунала',lang:'УКР'},
+ uk:{title:'Трибунал',me:'Уладзь',her:'Світланка',debts:'боргів',threwM:'вкинув',threwF:'вкинула',workedM:'відпрацював',workedF:'відпрацювала',
    dice:'Кубик',rolling:'Кидаємо...',tapHint:'тапни на борг, коли виконав',done:'Виконано ✅',undo:'Скасувати',
    pens:'Покарання',ready:'Готово',ph:'Наприклад, 20 присідань',toBank:'у скарбничку',addPen:'＋ Додати покарання',copyTo:'Скопіювати цей список',copyMe:'Уладзю',copyHer:'Світланці',copied:'Скопійовано ✓',
    edNote:'Емодзі змінюється тапом. Якщо покарання грошове, постав суму, тоді вона піде в лічильник крон. Кубик кожного кидає лише його покарання, і всі випадають з однаковим шансом. Старі борги лишаються такими, як були.',
    save:'Зберегти',cancel:'Скасувати',linkCopied:'Посилання скопійовано, надсилай',syncOff:'Синхронізацію ще не налаштовано',
    syncTitle:'Синхронізація',token:'GitHub токен (з доступом до gist)',gist:'ID гіста (порожньо = створиться новий)',synced:'Усе синхронізовано',syncErr:'Не вдалося синхронізувати',
-   share:'Поділитися',sync:'Синхронізація',edit:'Покарання',joined:'Підключилися до спільного штрафника',lang:'БЕЛ'}
+   share:'Поділитися',sync:'Синхронізація',edit:'Покарання',joined:'Підключилися до спільного трибуналу',lang:'БЕЛ'}
 };
 let lang=store.get('shtrafnik.lang','be');
 const t=k=>I18N[lang][k]||k;
@@ -281,7 +281,7 @@ async function sync(){
   try{
     const body=()=>({files:{[FILE]:{content:JSON.stringify({records},null,1)}}});
     if(!cfg.gist){
-      const g=await gh('POST','/gists',{description:'Штрафнік',public:false,...body()});
+      const g=await gh('POST','/gists',{description:'Трыбунал',public:false,...body()});
       cfg.gist=g.id; store.set('shtrafnik.sync',cfg);
     }else{
       const g=await gh('GET','/gists/'+cfg.gist);
