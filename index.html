@@ -129,17 +129,17 @@ const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',
 
 /* ---------- мова ---------- */
 const I18N={
- be:{title:'Трыбунал',me:'Уладзь',her:'Світланка',debts:'доўгаў',threwM:'укінуў',threwF:'укінула',workedM:'адпрацаваў',workedF:'адпрацавала',
+ be:{title:'Трыбунал',me:'Уладзь',her:'Світланка',debts:'доўгаў',pushM:'адцісканняў',pushF:'адцісканняў',workedM:'выканаў',workedF:'выканала',
    dice:'Кубік',rolling:'Кідаем...',tapHint:'тапні па доўгу, калі выканаў',done:'Выканана ✅',undo:'Адмяніць',
-   pens:'Пакаранні',ready:'Гатова',ph:'Напрыклад, 20 прысяданняў',toBank:'у капілку',addPen:'＋ Дадаць пакаранне',copyTo:'Скапіяваць гэты спіс',copyMe:'Уладзю',copyHer:'Світланцы',copied:'Скапіявана ✓',
-   edNote:'Эмодзі мяняецца тапам. Калі пакаранне грашовае, пастаў суму, тады яна пойдзе ў лічыльнік крон. Кубік кожнага кідае толькі яго пакаранні, і ўсе выпадаюць з аднолькавым шанцам. Старыя доўгі застаюцца такімі, як былі.',
+   pens:'Пакаранні',ready:'Гатова',ph:'Напрыклад, 20 прысяданняў',addPen:'＋ Дадаць пакаранне',copyTo:'Скапіяваць гэты спіс',copyMe:'Уладзю',copyHer:'Світланцы',copied:'Скапіявана ✓',
+   edNote:'Эмодзі мяняецца тапам. Калі ў назве ёсць адцісканні з лічбай (напрыклад, «20 адцісканняў»), яны пойдуць у агульны лічыльнік. Кубік кожнага кідае толькі яго пакаранні, і ўсе выпадаюць з аднолькавым шанцам. Старыя доўгі застаюцца такімі, як былі.',
    save:'Захаваць',cancel:'Адмена',linkCopied:'Лінк скапіяваны, адпраўляй',syncOff:'Сінхранізацыя яшчэ не наладжана',
    syncTitle:'Сінхранізацыя',token:'GitHub токен (з доступам да gist)',gist:'ID гіста (пуста = створыцца новы)',synced:'Усё сінхранізавана',syncErr:'Не атрымалася сінхранізаваць',
    share:'Падзяліцца',sync:'Сінхранізацыя',edit:'Пакаранні',joined:'Падключыліся да агульнага трыбунала',lang:'УКР'},
- uk:{title:'Трибунал',me:'Уладзь',her:'Світланка',debts:'боргів',threwM:'вкинув',threwF:'вкинула',workedM:'відпрацював',workedF:'відпрацювала',
+ uk:{title:'Трибунал',me:'Уладзь',her:'Світланка',debts:'боргів',pushM:'віджимань',pushF:'віджимань',workedM:'виконав',workedF:'виконала',
    dice:'Кубик',rolling:'Кидаємо...',tapHint:'тапни на борг, коли виконав',done:'Виконано ✅',undo:'Скасувати',
-   pens:'Покарання',ready:'Готово',ph:'Наприклад, 20 присідань',toBank:'у скарбничку',addPen:'＋ Додати покарання',copyTo:'Скопіювати цей список',copyMe:'Уладзю',copyHer:'Світланці',copied:'Скопійовано ✓',
-   edNote:'Емодзі змінюється тапом. Якщо покарання грошове, постав суму, тоді вона піде в лічильник крон. Кубик кожного кидає лише його покарання, і всі випадають з однаковим шансом. Старі борги лишаються такими, як були.',
+   pens:'Покарання',ready:'Готово',ph:'Наприклад, 20 присідань',addPen:'＋ Додати покарання',copyTo:'Скопіювати цей список',copyMe:'Уладзю',copyHer:'Світланці',copied:'Скопійовано ✓',
+   edNote:'Емодзі змінюється тапом. Якщо в назві є віджимання з числом (наприклад, «20 віджимань»), вони підуть у загальний лічильник. Кубик кожного кидає лише його покарання, і всі випадають з однаковим шансом. Старі борги лишаються такими, як були.',
    save:'Зберегти',cancel:'Скасувати',linkCopied:'Посилання скопійовано, надсилай',syncOff:'Синхронізацію ще не налаштовано',
    syncTitle:'Синхронізація',token:'GitHub токен (з доступом до gist)',gist:'ID гіста (порожньо = створиться новий)',synced:'Усе синхронізовано',syncErr:'Не вдалося синхронізувати',
    share:'Поділитися',sync:'Синхронізація',edit:'Покарання',joined:'Підключилися до спільного трибуналу',lang:'БЕЛ'}
@@ -148,22 +148,26 @@ let lang=store.get('shtrafnik.lang','be');
 const t=k=>I18N[lang][k]||k;
 
 /* ---------- дадзеныя ----------
-   records: пакаранні {kind:'pen',who,ic,s,kr,order} і доўгі {kind:'debt',who,ic,s,kr,t,done}
+   records: пакаранні {kind:'pen',who,ic,s,order} і доўгі {kind:'debt',who,ic,s,t,done}
    кожны запіс мае id і updated; выдаленне = del:true (каб сінхра ведала) */
 const SEED=[];
 ['me','her'].forEach(w=>[
-  {k:'push',ic:'💪',s:'20 адцісканняў',kr:0},{k:'k20',ic:'🪙',s:'20 Kč',kr:20},{k:'k50',ic:'💰',s:'50 Kč',kr:50}
-].forEach((p,i)=>SEED.push({id:w+'-'+p.k,kind:'pen',who:w,ic:p.ic,s:p.s,kr:p.kr,order:i,updated:1})));
+  {k:'push',ic:'💪',s:'20 адцісканняў'},{k:'k20',ic:'💪',s:'30 адцісканняў'},{k:'k50',ic:'🦵',s:'20 прысяданняў'}
+].forEach((p,i)=>SEED.push({id:w+'-'+p.k,kind:'pen',who:w,ic:p.ic,s:p.s,order:i,updated:1})));
 let records=store.get('shtrafnik.records',null)||SEED;
+// грошы прыбралі: старыя грашовыя пакаранні выдаляем
+function dropMoney(){let ch=false;records.forEach(r=>{if(r.kind==='pen'&&!r.del&&r.kr>0){r.del=true;r.updated=now();ch=true;}});if(ch)persist();return ch;}
 const persist=()=>store.set('shtrafnik.records',records);
 const uid=()=>now().toString(36)+Math.random().toString(36).slice(2,7);
 const pens=w=>records.filter(r=>r.kind==='pen'&&r.who===w&&!r.del).sort((a,b)=>a.order-b.order);
 const debts=w=>records.filter(r=>r.kind==='debt'&&r.who===w&&!r.del);
+// колькі адцісканняў у назве: «20 адцісканняў» → 20
+const reps=s=>{const m=/(\d+)\s*(адціск|отжим|віджим|відтиск|push)/i.exec(s||'');return m?+m[1]:0};
 const byId=id=>records.find(r=>r.id===id);
 function touch(r,ch){Object.assign(r,ch,{updated:now()});persist();schedulePush();}
 function addDebt(w,penId){
   const p=byId(penId);
-  const d={id:uid(),kind:'debt',who:w,ic:p.ic,s:p.s,kr:p.kr||0,t:now(),done:false,updated:now()};
+  const d={id:uid(),kind:'debt',who:w,ic:p.ic,s:p.s,t:now(),done:false,updated:now()};
   records.push(d);persist();schedulePush();render();
   toast(`${t(w)}: ${p.s} 😈`,()=>{touch(d,{del:true});render();});
 }
@@ -180,9 +184,9 @@ function toast(m,undo){
 /* ---------- табло ---------- */
 function half(w,c){
   const mine=debts(w),open=mine.filter(x=>!x.done).sort((a,b)=>b.t-a.t),f=w==='her';
-  const kr=mine.filter(x=>x.done&&x.kr).reduce((a,x)=>a+x.kr,0),worked=mine.filter(x=>x.done&&!x.kr).length;
+  const push=mine.filter(x=>x.done).reduce((a,x)=>a+reps(x.s),0),worked=mine.filter(x=>x.done).length;
   return `<section class="half ${c}"><div class="wrap"><div class="name">${t(w)}</div>
-  <div class="score"><div><b>${open.length}</b>${t('debts')}</div><div><b>${kr} Kč</b>${t(f?'threwF':'threwM')}</div><div><b>${worked}</b>${t(f?'workedF':'workedM')}</div></div>
+  <div class="score"><div><b>${open.length}</b>${t('debts')}</div><div><b>${push}</b>${t(f?'pushF':'pushM')}</div><div><b>${worked}</b>${t(f?'workedF':'workedM')}</div></div>
   <div class="pun">${pens(w).map(p=>`<button onclick="addDebt('${w}','${p.id}')"><span>${esc(p.ic)}</span>${esc(p.s)}</button>`).join('')}<button class="dice" onclick="roll('${w}')"><span>🎲</span>${t('dice')}</button></div>
   <div class="owe">${open.map(x=>`<button onclick="doneDebt('${x.id}')">${esc(x.ic)} ${esc(x.s)} ✓</button>`).join('')}</div>
   ${open.length?`<div class="hint">${t('tapHint')}</div>`:''}</div></section>`;
@@ -234,8 +238,7 @@ function renderEditor(){
   <div class="who">${['me','her'].map(k=>`<button class="${ew===k?'sel':''}" onclick="ew='${k}';renderEditor()">${k==='me'?'🙋‍♂️':'🙋‍♀️'} ${t(k)}</button>`).join('')}</div>
   ${L.map(p=>`<div class="er">
     <button class="emo" onclick="cycleEmo('${p.id}')">${esc(p.ic)}</button>
-    <div class="ef"><input value="${esc(p.s)}" placeholder="${t('ph')}" oninput="touch(byId('${p.id}'),{s:this.value})">
-      <label>${t('toBank')} <input type="number" inputmode="numeric" min="0" step="10" value="${p.kr||''}" placeholder="0" oninput="touch(byId('${p.id}'),{kr:+this.value||0})"> Kč</label></div>
+    <div class="ef"><input value="${esc(p.s)}" placeholder="${t('ph')}" oninput="touch(byId('${p.id}'),{s:this.value})"></div>
     ${L.length>1?`<button class="del" onclick="touch(byId('${p.id}'),{del:true});renderEditor()">✕</button>`:''}
   </div>`).join('')}
   ${L.length<6?`<button class="addp" onclick="addPen()">${t('addPen')}</button>`:''}
@@ -243,7 +246,7 @@ function renderEditor(){
   <div class="edn">${t('edNote')}</div>`;
 }
 function addPen(){
-  const L=pens(ew),r={id:uid(),kind:'pen',who:ew,ic:'🎁',s:'',kr:0,order:L.length?L[L.length-1].order+1:0,updated:now()};
+  const L=pens(ew),r={id:uid(),kind:'pen',who:ew,ic:'🎁',s:'',order:L.length?L[L.length-1].order+1:0,updated:now()};
   records.push(r);persist();renderEditor();
   const ins=$('sheetIn').querySelectorAll('.ef>input');ins[ins.length-1].focus();
 }
@@ -251,7 +254,7 @@ function cycleEmo(id){const p=byId(id),k=EMO.indexOf(p.ic);touch(p,{ic:EMO[(k+1)
 function copyPens(){
   const o=ew==='me'?'her':'me',src=pens(ew).filter(p=>p.s.trim());
   pens(o).forEach(p=>touch(p,{del:true}));
-  src.forEach((p,i)=>records.push({id:uid(),kind:'pen',who:o,ic:p.ic,s:p.s,kr:p.kr,order:i,updated:now()}));
+  src.forEach((p,i)=>records.push({id:uid(),kind:'pen',who:o,ic:p.ic,s:p.s,order:i,updated:now()}));
   persist();schedulePush();toast(t('copied'));
 }
 function clean(w){const L=pens(w),empty=L.filter(p=>!p.s.trim());if(empty.length<L.length)empty.forEach(p=>touch(p,{del:true}));}
@@ -287,7 +290,7 @@ async function sync(){
       const g=await gh('GET','/gists/'+cfg.gist);
       const raw=g.files&&g.files[FILE]&&g.files[FILE].content;
       const incoming=raw?(JSON.parse(raw).records||[]):[];
-      records=merge(records,incoming); persist();
+      records=merge(records,incoming); dropMoney(); persist();
       if(!$('sheet').classList.contains('open')) render();
       if(sig(records)!==sig(incoming)) await gh('PATCH','/gists/'+cfg.gist,body());
     }
@@ -322,7 +325,7 @@ $('shareBtn').onclick=async()=>{
   const hm=location.hash.match(/sync=([^&]+)/);
   if(hm){ try{ const c=JSON.parse(atob(decodeURIComponent(hm[1]))); if(c.token&&c.gist){ cfg=c; store.set('shtrafnik.sync',cfg); setTimeout(()=>toast(t('joined')),300); } }catch(e){}
     history.replaceState(null,'',location.pathname+location.search); }
-  render(); sync();
+  dropMoney(); render(); sync();
   document.addEventListener('visibilitychange',()=>{ if(document.visibilityState==='visible') sync(); });
 })();
 </script>
